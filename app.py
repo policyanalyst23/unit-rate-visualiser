@@ -13,13 +13,19 @@ if password != st.secrets["app_password"]:
 st.title("⚡ Dynamic UK Energy Price Cap Tracker")
 st.write("Percentage breakdown of the Standing Charge and Unit Rate cost stacks.")
 
-# 2. Securely Fetch Live Data
-@st.cache_data(ttl=600) 
+# 2. Fetch Local Data from GitHub
+@st.cache_data
 def load_data():
-    # REPLACE WITH YOUR ACTUAL PUBLISHED CSV LINK:
-    # csv_url = "https://docs.google.com/spreadsheets/d/e/YOUR_UNIQUE_LINK_HERE/pub?gid=123&single=true&output=csv"
-    
+    # Read the CSV file directly from the GitHub repository
+    # Make sure the file name matches exactly (including spaces and capital letters)
     data = pd.read_csv("Dashboard_Data - Sheet1.csv")
+    
+    # CLEANING STEP: Force 'Cost Value' to be a number so the math doesn't crash
+    # 1. Convert to string to safely remove £ and commas
+    data['Cost Value'] = data['Cost Value'].astype(str).str.replace('£', '', regex=False).str.replace(',', '', regex=False)
+    # 2. Convert to numbers. Any weird text (like dashes) becomes 'NaN', which we then turn into 0
+    data['Cost Value'] = pd.to_numeric(data['Cost Value'], errors='coerce').fillna(0)
+    
     return data.dropna(subset=["Period"])
 
 df = load_data()
@@ -31,20 +37,17 @@ selected_period = st.select_slider("Select Price Cap Period:", options=periods)
 filtered_df = df[df["Period"] == selected_period].copy()
 
 # 4. Data Preparation for a 100% Stacked Bar Chart
-# First, create the category labels for the X-axis
 filtered_df['Category'] = filtered_df['Fuel'] + " - " + filtered_df['Charge Type']
 
-# Next, calculate the total sum for each Category (e.g., Total Elec Unit Rate)
-# We use 'transform' so the total is appended to every relevant row
+# Calculate the total sum for each Category (e.g., Total Elec Unit Rate)
 category_totals = filtered_df.groupby('Category')['Cost Value'].transform('sum')
 
-# Now, calculate the percentage contribution of each component to its category total
+# Calculate the percentage contribution of each component
 filtered_df['Percentage'] = (filtered_df['Cost Value'] / category_totals) * 100
 
 # 5. Build the 100% Stacked Column Chart
 st.markdown("### Component Breakdown: Percentage of Total")
 
-# Plot using the new 'Percentage' column instead of the raw value
 fig = px.bar(
     filtered_df, 
     x="Category", 
@@ -54,7 +57,7 @@ fig = px.bar(
     title=f"Cost Stack Breakdown ({selected_period})",
     labels={"Percentage": "Percentage of Total (%)", "Category": "Fuel & Charge Type"},
     color_discrete_sequence=px.colors.qualitative.Pastel,
-    custom_data=["Cost Value"] # We pass the raw value here so we can show it when hovering
+    custom_data=["Cost Value"] # Passes the raw value for the hover tooltip
 )
 
 # Customise the hover pop-up to show both the % and the actual monetary figure
@@ -64,7 +67,7 @@ fig.update_traces(
                   "Absolute Value: %{customdata[0]:.4f}<extra></extra>"
 )
 
-# Lock the Y-axis to 100% so it looks neat
+# Lock the Y-axis to 100% to ensure equal height columns
 fig.update_layout(
     xaxis_title="", 
     yaxis_title="Percentage (%)", 
