@@ -18,7 +18,7 @@ st.write("Secure live data feed active. Use the slider to change periods.")
 @st.cache_data(ttl=600) # Checks the Google Sheet for updates every 10 minutes
 def load_data():
     # PASTE YOUR SECURE CSV LINK HERE:
-    csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTGkma1py4Lom6_5UHP-Su6oNowVYQ8FfuWrFK2yNSQTzPjyOLovbc5B-R9eCgTGo4LpMrKviJuHlcw/pub?gid=1106032341&single=true&output=csv"
+    csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSTOf7APKDB3BONwv-T4tBi5mh0dMMsH_ERFQFgihpOc_SfrjEXGH-cYG71yV6KdQ/pub?gid=344411272&single=true&output=csv"
     
     # Read the data and drop any accidentally blank rows
     data = pd.read_csv(csv_url)
