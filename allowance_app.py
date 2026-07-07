@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 st.title("📊 Allowance Breakdown Tracker")
-st.write("Deep dive into the underlying costs making up the price cap.")
+st.write("Deep dive into the underlying costs making up the standing charge and unit rate by payment method and fuel type.")
 
 # 1. Load the cleaned long-form data AND sort chronologically
 @st.cache_data
