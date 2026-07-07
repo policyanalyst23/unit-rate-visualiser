@@ -8,7 +8,7 @@ st.write("Deep dive into the underlying costs making up the price cap.")
 # 1. Load the cleaned long-form data AND sort chronologically
 @st.cache_data
 def load_allowances():
-    df = pd.read_csv("clean_allowances.csv")
+    df = pd.read_csv("Cleaned_Price_Cap_Data.csv")
     
     # THE FIX: Split the text by the hyphen, grab the first date, and convert to a real datetime object
     df["Start_Date"] = pd.to_datetime(df["Cap Period"].str.split(" - ").str[0], errors="coerce")
