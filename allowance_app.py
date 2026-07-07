@@ -5,10 +5,17 @@ import plotly.express as px
 st.title("📊 Allowance Breakdown Tracker")
 st.write("Deep dive into the underlying costs making up the price cap.")
 
-# 1. Load the cleaned long-form data
+# 1. Load the cleaned long-form data AND sort chronologically
 @st.cache_data
 def load_allowances():
-    return pd.read_csv("Cleaned_Price_Cap_Data.csv")
+    df = pd.read_csv("clean_allowances.csv")
+    
+    # THE FIX: Split the text by the hyphen, grab the first date, and convert to a real datetime object
+    df["Start_Date"] = pd.to_datetime(df["Cap Period"].str.split(" - ").str[0], errors="coerce")
+    
+    # Sort the entire database chronologically by this new hidden column
+    df = df.sort_values("Start_Date")
+    return df
 
 allowances_df = load_allowances()
 
@@ -22,16 +29,21 @@ with col2:
 st.markdown("---")
 
 # 3. THE NEW TIMELINE RANGE SLIDER
-# Extract the unique periods in the exact chronological order they appear in your CSV
+# Because we sorted the dataframe in Step 1, .unique() now extracts them in perfect chronological order!
 cap_periods = allowances_df["Cap Period"].unique().tolist()
 
 st.write("### ⏱️ Adjust Timeline")
-# This creates a slider with two handles, defaulting to showing the entire history
 start_period, end_period = st.select_slider(
     "Select Cap Period Range:",
     options=cap_periods,
     value=(cap_periods[0], cap_periods[-1]) 
 )
+
+start_idx = cap_periods.index(start_period)
+end_idx = cap_periods.index(end_period)
+valid_periods = cap_periods[start_idx:end_idx+1]
+
+st.markdown("---")
 
 # Logic to figure out all the periods that sit between the user's start and end choices
 start_idx = cap_periods.index(start_period)
@@ -70,10 +82,15 @@ for i, pm in enumerate(payment_methods):
             )
             
             # Remove background gridlines for a cleaner corporate look
+            # Remove background gridlines for a cleaner corporate look
             fig.update_layout(
                 barmode='stack',
                 plot_bgcolor="rgba(0,0,0,0)",
-                xaxis=dict(showgrid=False),
+                xaxis=dict(
+                    showgrid=False,
+                    categoryorder='array',       # THE FIX: Tells Plotly to use a custom order
+                    categoryarray=valid_periods  # THE FIX: Feeds it our perfectly sorted timeline list
+                ),
                 yaxis=dict(showgrid=True, gridcolor='lightgrey')
             )
             
