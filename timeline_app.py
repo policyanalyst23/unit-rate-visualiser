@@ -1,122 +1,120 @@
 import streamlit as st
-import pandas as pd
-import requests
-from bs4 import BeautifulSoup
+import PyPDF2
+import os
 from datetime import datetime
-import re
 
-# 1. Page Configuration
-st.set_page_config(page_title="Live Ofgem Timeline", layout="wide")
+# Import the local NLP summarization tools
+import nltk
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lex_rank import LexRankSummarizer
 
-st.title("⏱️ Live-Updating Ofgem Price Cap Timeline")
-st.write("This timeline dynamically scrapes Ofgem's portal to capture the latest 'Summary of Changes' documents automatically.")
+# Ensure the local language tokenizer is downloaded
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
-# 2. The Live Scraper Engine (Configured to run once a week)
-@st.cache_data(ttl="7d")
-def scrape_ofgem_timeline():
-    url = "https://www.ofgem.gov.uk/energy-regulation/domestic-and-non-domestic/energy-pricing-rules/energy-price-cap/energy-price-cap-default-tariff-levels"
+st.set_page_config(page_title="Local NLP Ofgem Timeline", layout="wide")
+
+# 1. PDF Text Extraction Engine
+def extract_text_from_pdf(pdf_path):
+    try:
+        text = ""
+        with open(pdf_path, "rb") as file:
+            reader = PyPDF2.PdfReader(file)
+            # Read just the first 5 pages where the Executive Summary lives
+            num_pages = min(5, len(reader.pages))
+            for i in range(num_pages):
+                page_text = reader.pages[i].extract_text()
+                if page_text:
+                    text += page_text + "\n"
+        return text
+    except Exception as e:
+        return ""
+
+# 2. Local Mathematical Summarization Engine
+@st.cache_data(show_spinner=False)
+def generate_local_summary(pdf_path):
+    """Uses a local LexRank algorithm to find the 4 most important sentences."""
+    if not os.path.exists(pdf_path):
+        return ["⚠️ PDF file not found in the local repository."]
+        
+    raw_text = extract_text_from_pdf(pdf_path)
+    if not raw_text.strip():
+        return ["⚠️ Could not extract readable text from this PDF."]
     
     try:
-        # Standard user-agent header to bypass basic firewall bot blocks
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-        response = requests.get(url, headers=headers, timeout=15)
-        soup = BeautifulSoup(response.text, 'html.parser')
+        # Feed the text to the NLP parser
+        parser = PlaintextParser.from_string(raw_text, Tokenizer("english"))
+        summarizer = LexRankSummarizer()
         
-        scraped_data = []
+        # Ask the algorithm for the top 4 sentences
+        summary_sentences = summarizer(parser.document, 4)
         
-        # Scan all available anchor links on the landing page
-        for link in soup.find_all('a', href=True):
-            link_text = link.text.strip()
-            link_url = link['href']
-            
-            # Case-insensitive match for the predictable naming pattern
-            if "summary of changes to energy price cap" in link_text.lower():
-                # Correct relative URLs if used by the CMS framework
-                if link_url.startswith("/"):
-                    link_url = "https://www.ofgem.gov.uk" + link_url
-                
-                # Extract the target year out of the link string to build a chronological key
-                year_match = re.search(r'202[0-9]', link_text)
-                if year_match:
-                    est_year = int(year_match.group(0))
-                else:
-                    est_year = datetime.now().year
-                
-                # Map a baseline date anchor for sorting metrics
-                placeholder_date = datetime(est_year, 1, 1)
-                
-                scraped_data.append({
-                    "Publication_Date": placeholder_date,
-                    "Version_Title": link_text,
-                    "Key_Changes": "This decision document was automatically parsed from the live Ofgem production ecosystem. Open the resource link below to read the comprehensive regulatory update.",
-                    "PDF_URL": link_url
-                })
-        
-        # Convert raw entries to DataFrame and clean up duplicates
-        df = pd.DataFrame(scraped_data)
-        if not df.empty:
-            df = df.drop_duplicates(subset=["PDF_URL"])
-            return df.sort_values("Publication_Date", ascending=False)
-        else:
-            return pd.DataFrame()
-            
+        # Clean up the output into a list of strings
+        return [str(sentence).strip() for sentence in summary_sentences]
+    
     except Exception as e:
-        st.error(f"Error executing connection loop to Ofgem portal: {e}")
-        return pd.DataFrame()
+        return [f"⚠️ Local summarization failed: {e}"]
 
-# 3. Initialize Data Pipeline
-df_timeline = scrape_ofgem_timeline()
-current_time = datetime.now()
-
-# 4. Empty State Network Fallback
-if df_timeline.empty:
-    st.warning("⚠️ Live scraping loop returned no documents or was actively dropped by the local network proxy. Deploying hardcoded baseline backup.")
-    df_timeline = pd.DataFrame([{
+# 3. The Repository Ledger
+REGULATORY_DOCS = [
+    {
+        "Cap_Period": "Oct 2026 - Dec 2026",
+        "Publication_Date": datetime(2026, 8, 25),
+        "File_Path": "pdfs/ofgem_cap_oct2026.pdf",
+        "PDF_Link": "https://www.ofgem.gov.uk/"
+    },
+    {
+        "Cap_Period": "Jul 2026 - Sept 2026",
         "Publication_Date": datetime(2026, 5, 22),
-        "Version_Title": "Summary of changes to energy price cap: July to September 2026",
-        "Key_Changes": "Local corporate network architecture dropped the parsing query. Please check connection maps or load the destination directly.",
-        "PDF_URL": "https://www.ofgem.gov.uk"
-    }])
+        "File_Path": "pdfs/ofgem_cap_jul2026.pdf",
+        "PDF_Link": "https://www.ofgem.gov.uk/"
+    }
+]
 
-# 5. Sidebar Meta panel
-with st.sidebar:
-    st.header("📊 Scraper Meta-Data")
-    st.success("App Status: Operational")
-    st.metric("Discovered Documents", len(df_timeline))
-    st.caption("Cache Persistence Strategy: **7 Days (Weekly Refresh)**")
-    st.info("The scraping engine runs once a week in the background to maximize performance and strictly observe Ofgem server request standards.")
+# Sort newest to top
+REGULATORY_DOCS.sort(key=lambda x: x["Publication_Date"], reverse=True)
 
+# 4. Build the UI
+st.title("📑 NLP Regulatory Timeline")
+st.write("Upload official Ofgem PDFs, and local algorithms will extract the core methodology changes automatically.")
 st.markdown("---")
 
-# 6. Render the Chronological Visual UI Tracks
-for index, row in df_timeline.iterrows():
-    pub_date = row["Publication_Date"]
+current_time = datetime.now()
+
+# 5. Render the Timeline
+for doc in REGULATORY_DOCS:
+    pub_date = doc["Publication_Date"]
     
-    # Self-Updating Flagging Architecture 
-    if pub_date.year == current_time.year:
-        badge_html = '<span style="background-color:#2ecc71; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">🟢 ACTIVE REGULATORY CYCLE</span>'
+    if pub_date.year == current_time.year and pub_date.month == current_time.month:
+        badge = '<span style="background-color:#2ecc71; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">🟢 CURRENT CAP</span>'
     elif pub_date > current_time:
-        badge_html = '<span style="background-color:#f1c40f; color:black; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">🟡 ADVANCE FRAMEWORK RELEASE</span>'
+        badge = '<span style="background-color:#f1c40f; color:black; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">🟡 UPCOMING</span>'
     else:
-        badge_html = '<span style="background-color:#95a5a6; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">⚫ HISTORICAL LOG</span>'
-        
-    # Build layout structural split
+        badge = '<span style="background-color:#95a5a6; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px;">⚫ HISTORICAL</span>'
+
     col_date, col_line, col_content = st.columns([2, 0.5, 7])
     
     with col_date:
-        st.write(f"### {pub_date.strftime('%Y Archive')}")
-        st.markdown(badge_html, unsafe_allow_html=True)
+        st.write(f"### {pub_date.strftime('%d %b %Y')}")
+        st.markdown(badge, unsafe_allow_html=True)
         
     with col_line:
-        # Renders the literal physical track down the page
-        st.markdown(
-            '<div style="border-left: 3px solid #34495e; height: 140px; margin-left: 20px; opacity: 0.6;"></div>', 
-            unsafe_allow_html=True
-        )
+        st.markdown('<div style="border-left: 3px solid #34495e; height: 100%; min-height: 200px; margin-left: 20px; opacity: 0.6;"></div>', unsafe_allow_html=True)
         
     with col_content:
-        st.markdown(f"### {row['Version_Title']}")
-        st.write(row['Key_Changes'])
-        st.markdown(f"[🔗 Open Official Ofgem PDF Artifact]({row['PDF_URL']})")
+        st.markdown(f"## {doc['Cap_Period']}")
+        
+        with st.spinner("NLP scanning document..."):
+            extracted_points = generate_local_summary(doc["File_Path"])
+            
+        st.markdown("**Core Extraction:**")
+        # Format the top 4 sentences as bullet points
+        for point in extracted_points:
+            st.write(f"- {point}")
+            
+        st.markdown(f"<br>[🔗 View Original Ofgem Document]({doc['PDF_Link']})", unsafe_allow_html=True)
         
     st.markdown("<br>", unsafe_allow_html=True)
