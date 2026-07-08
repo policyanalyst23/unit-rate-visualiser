@@ -3,3 +3,6 @@ pandas
 plotly
 requests
 beautifulsoup4
+PyPDF2
+sumy
+nltk
