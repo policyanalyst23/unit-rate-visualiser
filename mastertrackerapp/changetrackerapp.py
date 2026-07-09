@@ -47,6 +47,7 @@ ALLOWANCE_DICT = {
     'Levelisation': 'Levelisation'
 }
 
+# ALL_TABS helper variable for events that span across the whole dashboard
 ALL_TABS = ["Wholesale", "Policy", "Network", "OPEX", "Other Costs"]
 
 POLICY_EVENTS = [
@@ -82,7 +83,7 @@ TAB_GROUPINGS = {
     "Other Costs": ['Adjustment Allowance', 'Payment Method Uplift (Fixed)', 'Payment Method Uplift (Variable)', 'Levelisation']
 }
 
-# Standardize messy fuel names across all datasets
+# Standardize messy fuel names across all datasets to prevent jagged line graphs
 FUEL_MAPPING = {
     'Electricity Single Rate': 'Electricity Single-Rate',
     'Electricity- Single-Rate': 'Electricity Single-Rate',
@@ -167,14 +168,13 @@ def load_benchmark(folder_path):
 folder_path = 'mastertrackerapp/'
 df_master = load_and_combine_data(folder_path)
 df_bench = load_benchmark(folder_path)
-
 # ==========================================
 # 4. GLOBAL SIDEBAR CONTROLS
 # ==========================================
 st.sidebar.header("Global Filters")
 fuel_types = ["Electricity Single-Rate", "Electricity Multi-Register", "Gas", "Dual Fuel (implied)"]
 payment_methods = ["Direct Debit", "Standard Credit", "PPM"]
-charge_types = ["Standing Charge", "Unit Rate", "Total (Both)"]
+charge_types = ["Standing Charge", "Unit Rate"]
 
 selected_fuel = st.sidebar.selectbox("Fuel Type", options=fuel_types)
 selected_payment = st.sidebar.selectbox("Payment Method", options=payment_methods)
@@ -195,17 +195,11 @@ def render_tab_content(tab_title):
         st.error("Master dataset is empty. Please check your data files.")
         return
 
-    # 1. Filter by Fuel Type
-    filtered = df_master[df_master['Fuel Type'] == selected_fuel]
-    
-    # 2. Filter by Charge Type (Bypass if "Total (Both)" is selected)
-    if selected_charge != "Total (Both)":
-        filtered = filtered[filtered['Charge Type'] == selected_charge]
-        
-    # 3. Filter by Payment Method (allowing for 'All')
+    # Strict, exact matching to prevent jagged graph lines
+    filtered = df_master[(df_master['Fuel Type'] == selected_fuel) & 
+                         (df_master['Charge Type'] == selected_charge)]
     filtered = filtered[(filtered['Payment Method'] == selected_payment) | (filtered['Payment Method'] == 'All')]
     
-    # 4. Filter by the specific tab's allowances
     tab_allowances = TAB_GROUPINGS[tab_title]
     filtered = filtered[filtered['Allowance_Full'].isin(tab_allowances)]
 
@@ -246,15 +240,9 @@ def render_tab_content(tab_title):
         start_date = unique_dates[0]
         end_date = unique_dates[0]
 
-    chart_data = filtered[filtered['Allowance_Full'].isin(selected_allowances)].copy()
+    chart_data = filtered[filtered['Allowance_Full'].isin(selected_allowances)]
     chart_data = chart_data[(chart_data['Start Date'] >= start_date) & (chart_data['Start Date'] <= end_date)]
     chart_data = chart_data.sort_values('Start Date')
-
-    # DYNAMIC LABELING: Split SC and UR natively in the graph if "Total" is selected
-    if selected_charge == "Total (Both)":
-        chart_data['Plot_Label'] = chart_data['Allowance_Full'] + " (" + chart_data['Charge Type'] + ")"
-    else:
-        chart_data['Plot_Label'] = chart_data['Allowance_Full']
 
     # --- UI: Visualization Toggle ---
     chart_style = st.radio(
@@ -267,16 +255,15 @@ def render_tab_content(tab_title):
     # --- Build Plotly Figure with Secondary Y-Axis ---
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # Iterate through the dynamically created labels
-    for label in chart_data['Plot_Label'].unique():
-        allowance_data = chart_data[chart_data['Plot_Label'] == label]
+    for allowance in selected_allowances:
+        allowance_data = chart_data[chart_data['Allowance_Full'] == allowance]
         custom_hover = "<b>%{customdata}</b><br>Value: £%{y:.2f}<extra></extra>"
         
         if chart_style == "Line Graph":
             fig.add_trace(
                 go.Scatter(
                     x=allowance_data['Start Date'], y=allowance_data['Cost Value'], 
-                    mode='lines+markers', name=label,
+                    mode='lines+markers', name=allowance,
                     customdata=allowance_data['Cap Period'], hovertemplate=custom_hover
                 ), 
                 secondary_y=False
@@ -285,7 +272,7 @@ def render_tab_content(tab_title):
             fig.add_trace(
                 go.Bar(
                     x=allowance_data['Start Date'], y=allowance_data['Cost Value'], 
-                    name=label,
+                    name=allowance,
                     customdata=allowance_data['Cap Period'], hovertemplate=custom_hover
                 ), 
                 secondary_y=False
@@ -296,7 +283,6 @@ def render_tab_content(tab_title):
     elif chart_style == "Grouped Bar":
         fig.update_layout(barmode='group')
 
-    # --- Benchmark Overlay ---
     if selected_benchmark != "None" and not df_bench.empty:
         bench_data = df_bench[(df_bench['Fuel Type'] == selected_fuel) & 
                               (df_bench['Payment Method'] == selected_payment) & 
@@ -320,8 +306,9 @@ def render_tab_content(tab_title):
     show_events = st.checkbox(f"Show {tab_title} Policy Events (Hover over stars for details)", value=True, key=f"chk_{tab_title}")
     if show_events:
         date_to_events = {}
+        # Group events by date that match this specific tab
         for event in POLICY_EVENTS:
-            if tab_title in event["category"] or "ALL TABS" in event["category"]:
+            if tab_title in event["category"]:
                 event_date = pd.to_datetime(event["date"])
                 if start_date <= event_date <= end_date:
                     if event_date not in date_to_events:
@@ -331,6 +318,7 @@ def render_tab_content(tab_title):
         event_dates, event_texts = [], []
         for e_date, texts in date_to_events.items():
             event_dates.append(e_date)
+            # Create a clean bulleted list if there are multiple events on the same day
             bullet_points = "<br>".join([f"• {t}" for t in texts])
             event_texts.append(f"{e_date.strftime('%d %b %Y')}<br>{bullet_points}")
             
@@ -352,16 +340,7 @@ def render_tab_content(tab_title):
                 secondary_y=False
             )
     
-    # EXPLICITLY TELL PLOTLY TO USE EXACT CAP PERIOD DATES ON THE X-AXIS
-    unique_tick_dates = chart_data['Start Date'].dropna().unique()
-    
-    fig.update_xaxes(
-        title_text="Timeline", 
-        tickmode='array', 
-        tickvals=unique_tick_dates, 
-        tickformat="%b %Y"
-    )
-    
+    fig.update_xaxes(title_text="Timeline", tickformat="%b %Y", dtick="M3")
     fig.update_yaxes(title_text="Allowance Value (£)", secondary_y=False)
     
     if selected_benchmark != "None":
