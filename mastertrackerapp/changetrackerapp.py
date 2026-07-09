@@ -126,8 +126,8 @@ def load_and_combine_data(folder_path):
                 
             if 'Start Date' not in df.columns and 'Cap Period' in df.columns:
                 df['Start'] = df['Cap Period'].astype(str).str.split('-').str[0].str.strip()
-                df['Start Date'] = pd.to_datetime(df['Start'], format='%B %Y', errors='coerce').fillna(
-                                   pd.to_datetime(df['Start'], format='%b %Y', errors='coerce'))
+                # Use pandas automatic datetime inference (removes strict format dependencies)
+                df['Start Date'] = pd.to_datetime(df['Start'], errors='coerce')
             elif 'Start Date' in df.columns:
                 df['Start Date'] = pd.to_datetime(df['Start Date'], errors='coerce')
                 
@@ -158,7 +158,13 @@ def load_benchmark(folder_path):
                 
         if 'Fuel Type' in df.columns:
             df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
-        df['Start Date'] = pd.to_datetime(df['Start Date'], errors='coerce')
+            
+        if 'Start Date' not in df.columns and 'Cap Period' in df.columns:
+            df['Start'] = df['Cap Period'].astype(str).str.split('-').str[0].str.strip()
+            df['Start Date'] = pd.to_datetime(df['Start'], errors='coerce')
+        elif 'Start Date' in df.columns:
+            df['Start Date'] = pd.to_datetime(df['Start Date'], errors='coerce')
+            
         return df
     return pd.DataFrame()
 
@@ -350,8 +356,8 @@ def render_tab_content(tab_title):
                 secondary_y=False
             )
     
-    # Improve Axes & Layout
-    fig.update_xaxes(title_text="Timeline", tickformat="%b %Y", dtick="M3")
+    # Improve Axes & Layout - removed forced dtick spacing to prevent dropped non-January labels
+    fig.update_xaxes(title_text="Timeline", tickformat="%b %Y")
     fig.update_yaxes(title_text="Allowance Value (£)", secondary_y=False)
     
     if selected_benchmark != "None":
