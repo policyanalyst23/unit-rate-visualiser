@@ -47,21 +47,28 @@ ALLOWANCE_DICT = {
     'Levelisation': 'Levelisation'
 }
 
-POLICY_EVENTS = {
-    "2022-06-23": "Updated CfD methodology (dynamic negative recovery)",
-    "2022-08-04": "Wholesale Cost Adj (+£46 for SVT demand)",
-    "2023-02-17": "COVID-19 True-Up Process (+£11 bad debt)",
-    "2023-02-27": "ECO+ / GBIS allowance introduced",
-    "2023-08-25": "EBIT hybrid model (+£10) & ASC Bad Debt (+£8.77)",
-    "2024-02-23": "Debt Float (+£28) & SC Levelisation",
-    "2024-08-23": "ASC Bad Debt Allowance extended",
-    "2025-02-25": "Network Charging Compensation (+£3)",
-    "2025-05-23": "Enduring OPEX framework replaces debt floats (-£8 avg)",
-    "2025-08-25": "Interim UIG Allowance updated (+£4.30)",
-    "2025-10-24": "WHD Scheme Expansion Cost (+£7)",
-    "2025-11-21": "nRAB Allowance (+£14), GCF adj, Deadband removed",
-    "2025-12-09": "WHD shifted from SC to unit rate"
-}
+ALL_TABS = ["Wholesale", "Policy", "Network", "OPEX", "Other Costs"]
+
+POLICY_EVENTS = [
+    {"date": "2022-06-23", "category": ["Wholesale"], "text": "Updated CfD methodology (dynamic negative recovery)"},
+    {"date": "2022-08-04", "category": ["Wholesale"], "text": "Wholesale Cost Adjustment (+£46 for SVT demand)"},
+    {"date": "2023-02-17", "category": ["OPEX"], "text": "COVID-19 True-Up Process (+£11 bad debt)"},
+    {"date": "2023-02-27", "category": ["Policy"], "text": "ECO+ / GBIS allowance introduced"},
+    {"date": "2023-08-25", "category": ["OPEX"], "text": "EBIT hybrid model (+£10)"},
+    {"date": "2023-08-25", "category": ["OPEX"], "text": "ASC Bad Debt (+£8.77) for PPM"},
+    {"date": "2023-08-25", "category": ["Wholesale"], "text": "Technical changes regarding inflation calculations and UIG allocation"},
+    {"date": "2024-02-23", "category": ["OPEX"], "text": "Debt Float (+£28) introduced"},
+    {"date": "2024-02-23", "category": ["Other Costs"], "text": "Standing Charge Levelisation (PPM -£49, DD +£10)"},
+    {"date": "2024-08-23", "category": ["OPEX"], "text": "ASC Bad Debt Allowance extended"},
+    {"date": "2025-02-25", "category": ["Policy"], "text": "Network Charging Compensation (NCC) (+£3)"},
+    {"date": "2025-05-23", "category": ["OPEX"], "text": "Enduring OPEX framework replaces debt floats (-£8 avg)"},
+    {"date": "2025-08-25", "category": ["Wholesale"], "text": "Interim UIG Allowance updated (+£4.30)"},
+    {"date": "2025-10-24", "category": ["Policy"], "text": "WHD Scheme Expansion Cost (+£7)"},
+    {"date": "2025-11-21", "category": ["Policy"], "text": "nRAB Allowance (+£14) for Sizewell C"},
+    {"date": "2025-11-21", "category": ["Wholesale"], "text": "GCF adj (~+£5.10 impact) & Deadband removed"},
+    {"date": "2025-11-21", "category": ALL_TABS, "text": "Lowered Typical Domestic Consumption Values (TDCV)"},
+    {"date": "2025-12-09", "category": ["Policy"], "text": "WHD shifted from standing charge to unit rate"}
+]
 
 TAB_GROUPINGS = {
     "Wholesale": ['Direct Fuel Cost', 'Backwardation', 'Capacity Market', 'Contracts for Difference (CfD)'],
@@ -75,7 +82,7 @@ TAB_GROUPINGS = {
     "Other Costs": ['Adjustment Allowance', 'Payment Method Uplift (Fixed)', 'Payment Method Uplift (Variable)', 'Levelisation']
 }
 
-# Standardize messy fuel names across all datasets to prevent jagged line graphs
+# Standardize messy fuel names across all datasets
 FUEL_MAPPING = {
     'Electricity Single Rate': 'Electricity Single-Rate',
     'Electricity- Single-Rate': 'Electricity Single-Rate',
@@ -106,6 +113,11 @@ def load_and_combine_data(folder_path):
         if os.path.exists(filepath):
             df = pd.read_csv(filepath)
             
+            # Scrub Whitespaces
+            for col in ['Fuel Type', 'Charge Type', 'Payment Method', 'Allowance']:
+                if col in df.columns:
+                    df[col] = df[col].astype(str).str.strip()
+            
             if 'Fuel Type' in df.columns:
                 df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
                 
@@ -122,7 +134,7 @@ def load_and_combine_data(folder_path):
             if 'Allowance' in df.columns:
                 df['Allowance_Full'] = df['Allowance'].map(ALLOWANCE_DICT).fillna(df['Allowance'])
                 
-            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all():
+            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all() or (df['Payment Method'] == 'nan').all():
                 df['Payment Method'] = 'All' 
                 
             dfs.append(df)
@@ -138,6 +150,12 @@ def load_benchmark(folder_path):
     filepath = os.path.join(folder_path, 'total_bill_cleaned.csv')
     if os.path.exists(filepath):
         df = pd.read_csv(filepath)
+        
+        # Scrub Whitespaces
+        for col in ['Fuel Type', 'Charge Type', 'Payment Method']:
+            if col in df.columns:
+                df[col] = df[col].astype(str).str.strip()
+                
         if 'Fuel Type' in df.columns:
             df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
         df['Start Date'] = pd.to_datetime(df['Start Date'], errors='coerce')
@@ -154,7 +172,7 @@ df_bench = load_benchmark(folder_path)
 st.sidebar.header("Global Filters")
 fuel_types = ["Electricity Single-Rate", "Electricity Multi-Register", "Gas", "Dual Fuel (implied)"]
 payment_methods = ["Direct Debit", "Standard Credit", "PPM"]
-charge_types = ["Standing Charge", "Unit Rate"]
+charge_types = ["Standing Charge", "Unit Rate", "Total (Both)"]
 
 selected_fuel = st.sidebar.selectbox("Fuel Type", options=fuel_types)
 selected_payment = st.sidebar.selectbox("Payment Method", options=payment_methods)
@@ -175,11 +193,17 @@ def render_tab_content(tab_title):
         st.error("Master dataset is empty. Please check your data files.")
         return
 
-    # Strict, exact matching to prevent jagged graph lines
-    filtered = df_master[(df_master['Fuel Type'] == selected_fuel) & 
-                         (df_master['Charge Type'] == selected_charge)]
+    # 1. Filter by Fuel Type
+    filtered = df_master[df_master['Fuel Type'] == selected_fuel]
+    
+    # 2. Filter by Charge Type (Bypass if "Total (Both)" is selected)
+    if selected_charge != "Total (Both)":
+        filtered = filtered[filtered['Charge Type'] == selected_charge]
+        
+    # 3. Filter by Payment Method (allowing for 'All')
     filtered = filtered[(filtered['Payment Method'] == selected_payment) | (filtered['Payment Method'] == 'All')]
     
+    # 4. Filter by the specific tab's allowances
     tab_allowances = TAB_GROUPINGS[tab_title]
     filtered = filtered[filtered['Allowance_Full'].isin(tab_allowances)]
 
@@ -220,9 +244,15 @@ def render_tab_content(tab_title):
         start_date = unique_dates[0]
         end_date = unique_dates[0]
 
-    chart_data = filtered[filtered['Allowance_Full'].isin(selected_allowances)]
+    chart_data = filtered[filtered['Allowance_Full'].isin(selected_allowances)].copy()
     chart_data = chart_data[(chart_data['Start Date'] >= start_date) & (chart_data['Start Date'] <= end_date)]
     chart_data = chart_data.sort_values('Start Date')
+
+    # DYNAMIC LABELING: Split SC and UR natively in the graph if "Total" is selected
+    if selected_charge == "Total (Both)":
+        chart_data['Plot_Label'] = chart_data['Allowance_Full'] + " (" + chart_data['Charge Type'] + ")"
+    else:
+        chart_data['Plot_Label'] = chart_data['Allowance_Full']
 
     # --- UI: Visualization Toggle ---
     chart_style = st.radio(
@@ -235,15 +265,16 @@ def render_tab_content(tab_title):
     # --- Build Plotly Figure with Secondary Y-Axis ---
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    for allowance in selected_allowances:
-        allowance_data = chart_data[chart_data['Allowance_Full'] == allowance]
+    # Add Allowances (Primary Y-Axis)
+    for label in chart_data['Plot_Label'].unique():
+        allowance_data = chart_data[chart_data['Plot_Label'] == label]
         custom_hover = "<b>%{customdata}</b><br>Value: £%{y:.2f}<extra></extra>"
         
         if chart_style == "Line Graph":
             fig.add_trace(
                 go.Scatter(
                     x=allowance_data['Start Date'], y=allowance_data['Cost Value'], 
-                    mode='lines+markers', name=allowance,
+                    mode='lines+markers', name=label,
                     customdata=allowance_data['Cap Period'], hovertemplate=custom_hover
                 ), 
                 secondary_y=False
@@ -252,7 +283,7 @@ def render_tab_content(tab_title):
             fig.add_trace(
                 go.Bar(
                     x=allowance_data['Start Date'], y=allowance_data['Cost Value'], 
-                    name=allowance,
+                    name=label,
                     customdata=allowance_data['Cap Period'], hovertemplate=custom_hover
                 ), 
                 secondary_y=False
@@ -263,8 +294,8 @@ def render_tab_content(tab_title):
     elif chart_style == "Grouped Bar":
         fig.update_layout(barmode='group')
 
+    # --- Benchmark Overlay (Secondary Y-Axis) ---
     if selected_benchmark != "None" and not df_bench.empty:
-        # Exact matching here fixes the jagged benchmark lines
         bench_data = df_bench[(df_bench['Fuel Type'] == selected_fuel) & 
                               (df_bench['Payment Method'] == selected_payment) & 
                               (df_bench['Charge Type'] == selected_benchmark)]
@@ -283,17 +314,25 @@ def render_tab_content(tab_title):
                 secondary_y=True
             )
 
-    show_events = st.checkbox("Show Policy Events (Hover over stars for details)", value=True, key=f"chk_{tab_title}")
+    # --- Policy Events specific to this Tab ---
+    show_events = st.checkbox(f"Show {tab_title} Policy Events (Hover over stars for details)", value=True, key=f"chk_{tab_title}")
     if show_events:
-        event_dates, event_texts = [], []
-        for date_str, event_text in POLICY_EVENTS.items():
-            event_date = pd.to_datetime(date_str)
-            if event_date >= start_date and event_date <= end_date:
-                event_dates.append(event_date)
-                event_texts.append(f"{date_str}<br>{event_text}")
+        date_to_events = {}
+        for event in POLICY_EVENTS:
+            if tab_title in event["category"] or "ALL TABS" in event["category"]:
+                event_date = pd.to_datetime(event["date"])
+                if start_date <= event_date <= end_date:
+                    if event_date not in date_to_events:
+                        date_to_events[event_date] = []
+                    date_to_events[event_date].append(event["text"])
         
+        event_dates, event_texts = [], []
+        for e_date, texts in date_to_events.items():
+            event_dates.append(e_date)
+            bullet_points = "<br>".join([f"• {t}" for t in texts])
+            event_texts.append(f"{e_date.strftime('%d %b %Y')}<br>{bullet_points}")
+            
         if event_dates:
-            # Place the stars dynamically at the bottom of the visible chart space
             y_min = chart_data['Cost Value'].min() if not chart_data.empty else 0
             star_y = 0 if y_min >= 0 else y_min
             
@@ -311,6 +350,7 @@ def render_tab_content(tab_title):
                 secondary_y=False
             )
     
+    # Improve Axes & Layout
     fig.update_xaxes(title_text="Timeline", tickformat="%b %Y", dtick="M3")
     fig.update_yaxes(title_text="Allowance Value (£)", secondary_y=False)
     
@@ -325,6 +365,7 @@ def render_tab_content(tab_title):
     
     st.plotly_chart(fig, use_container_width=True)
 
+    # --- Data Download Button ---
     csv_data = chart_data.to_csv(index=False).encode('utf-8')
     st.download_button(
         label=f"📥 Download Filtered {tab_title} Data (CSV)",
