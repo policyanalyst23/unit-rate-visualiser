@@ -16,7 +16,7 @@ st.markdown("Play with the July 2026 price cap allowances. Add, edit, or remove 
 @st.cache_data
 def load_sandbox_data():
     try:
-        df = pd.read_csv("Sandbox_Master_Allowances_July2026.csv")
+        df = pd.read_csv("sandbox/Sandbox_Master_Allowances_July2026.csv")
         return df
     except FileNotFoundError:
         st.error("Missing 'Sandbox_Master_Allowances_July2026.csv'. Please run the Colab extraction script first.")
