@@ -36,9 +36,11 @@ TDCV_DEFAULTS = {
 # 3. SIDEBAR ENGINE: ANCHORS & CONSUMPTION
 # ==========================================
 st.sidebar.header("1. Choose Baseline Profile")
+
 if not df_master.empty:
-    available_fuels = sorted(df_master['Fuel Type'].unique())
-    available_pms = sorted(df_master['Payment Method'].unique())
+    # Drop any hidden NaN values and ensure they are strings before sorting
+    available_fuels = sorted([str(x) for x in df_master['Fuel Type'].dropna().unique()])
+    available_pms = sorted([str(x) for x in df_master['Payment Method'].dropna().unique()])
 else:
     available_fuels, available_pms = [], []
 
