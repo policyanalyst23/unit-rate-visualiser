@@ -1,0 +1,319 @@
+Fuel Type,Allowance,Charge Type,Allowance Value,Tab Category,Payment Method,Subtotal (UR/SC),Total Bill,% of Subtotal,% of Total Bill
+Dual Fuel (implied),CO,Standing Charge,122.27,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Standing Charge,9.42,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Standing Charge,7.83,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Standing Charge,2.41,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Standing Charge,20.67,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Standing Charge,-6.2,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),CO,Unit Rate,78.24,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Unit Rate,39.89,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Unit Rate,34.78,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Unit Rate,14.32,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Unit Rate,13.36,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Unit Rate,-2.79,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),CO,Standing Charge,188.6,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Standing Charge,12.34,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Standing Charge,9.49,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Standing Charge,3.33,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Standing Charge,20.67,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Standing Charge,-14.22,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),CO,Unit Rate,74.94,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Unit Rate,6.16,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Unit Rate,33.43,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Unit Rate,13.79,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Unit Rate,13.36,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Unit Rate,0.0,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),CO,Standing Charge,162.59,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Standing Charge,32.2,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Standing Charge,9.23,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Standing Charge,3.35,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Standing Charge,20.67,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Standing Charge,-6.2,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),CO,Unit Rate,78.24,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),DRC,Unit Rate,108.22,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),EBIT,Unit Rate,35.23,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),HAP,Unit Rate,15.32,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),IC,Unit Rate,13.36,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Dual Fuel (implied),SMNCC,Unit Rate,-2.79,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Standing Charge,42.39,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Unit Rate,67.77,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,BSUoS,Unit Rate,38.89,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Standing Charge,42.39,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Unit Rate,67.77,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,BSUoS,Unit Rate,38.89,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Standing Charge,42.39,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,DUoS,Unit Rate,67.77,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity - Single Rate,BSUoS,Unit Rate,38.89,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Standing Charge,81.24,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Standing Charge,42.39,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Standing Charge,47.39,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Standing Charge,6.26,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Standing Charge,4.75,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Standing Charge,1.01,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Standing Charge,9.59,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Standing Charge,-2.11,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Unit Rate,2.11,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Unit Rate,77.55,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,BSUoS,Unit Rate,52.81,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Unit Rate,49.33,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Unit Rate,24.85,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Unit Rate,19.26,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Unit Rate,9.51,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Unit Rate,9.34,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Unit Rate,-0.95,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,RO,Unit Rate,8.18,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CfD,Unit Rate,9.32,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,Direct Fuel,Unit Rate,98.76,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Standing Charge,81.24,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Standing Charge,42.39,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Standing Charge,80.94,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Standing Charge,6.57,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Standing Charge,5.5,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Standing Charge,1.48,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Standing Charge,9.59,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Standing Charge,-5.23,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Unit Rate,2.11,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Unit Rate,77.55,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,BSUoS,Unit Rate,52.81,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Unit Rate,46.26,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Unit Rate,4.0,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Unit Rate,18.61,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Unit Rate,9.16,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Unit Rate,9.34,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Unit Rate,0.0,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,RO,Unit Rate,8.18,Policy Cost Allowances,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CfD,Unit Rate,9.32,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,Direct Fuel,Unit Rate,98.76,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Standing Charge,81.24,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Standing Charge,42.39,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Standing Charge,66.89,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Standing Charge,19.98,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Standing Charge,5.4,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Standing Charge,1.51,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Standing Charge,9.59,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Standing Charge,-2.11,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,TNUoS,Unit Rate,2.11,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DUoS,Unit Rate,77.55,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,BSUoS,Unit Rate,52.81,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CO,Unit Rate,49.33,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,DRC,Unit Rate,67.52,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,EBIT,Unit Rate,19.67,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,HAP,Unit Rate,10.14,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,IC,Unit Rate,9.34,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,SMNCC,Unit Rate,-0.95,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,RO,Unit Rate,8.18,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,CfD,Unit Rate,9.32,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Multi-Register,Direct Fuel,Unit Rate,98.76,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Standing Charge,81.24,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Standing Charge,47.39,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Standing Charge,6.26,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Standing Charge,5.18,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Standing Charge,1.02,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Standing Charge,9.4,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Standing Charge,-2.11,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Unit Rate,1.89,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Unit Rate,49.33,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Unit Rate,19.51,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Unit Rate,16.51,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Unit Rate,7.4,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Unit Rate,9.15,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Unit Rate,-0.95,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,RO,Unit Rate,8.18,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CfD,Unit Rate,9.31,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Direct Fuel,Unit Rate,98.53,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Backwardation,Unit Rate,-0.25,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Standing Charge,81.24,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Standing Charge,80.94,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Standing Charge,5.98,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Standing Charge,5.97,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Standing Charge,1.47,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Standing Charge,9.4,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Standing Charge,-5.23,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Unit Rate,1.89,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Unit Rate,46.26,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Unit Rate,3.74,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Unit Rate,15.9,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Unit Rate,7.13,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Unit Rate,9.15,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Unit Rate,0.0,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,RO,Unit Rate,8.18,Policy Cost Allowances,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CfD,Unit Rate,9.31,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Direct Fuel,Unit Rate,98.53,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Backwardation,Unit Rate,-0.25,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Standing Charge,81.24,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Standing Charge,66.89,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Standing Charge,19.95,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Standing Charge,5.86,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Standing Charge,1.51,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Standing Charge,9.4,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Standing Charge,-2.11,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,TNUoS,Unit Rate,1.89,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CO,Unit Rate,49.33,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,DRC,Unit Rate,53.37,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,EBIT,Unit Rate,16.77,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,HAP,Unit Rate,7.9,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,IC,Unit Rate,9.15,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,SMNCC,Unit Rate,-0.95,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,RO,Unit Rate,8.18,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,CfD,Unit Rate,9.31,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Direct Fuel,Unit Rate,98.53,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Electricity Single-Rate,Backwardation,Unit Rate,-0.25,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,CO,Standing Charge,74.87,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,DRC,Standing Charge,3.16,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Standing Charge,2.65,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,HAP,Standing Charge,1.39,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,IC,Standing Charge,11.27,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Standing Charge,-4.09,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Gas Transmission,Unit Rate,13.45,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Gas Distribution,Unit Rate,165.22,Network Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,CO,Unit Rate,28.91,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,DRC,Unit Rate,20.38,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Unit Rate,18.27,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,HAP,Unit Rate,6.91,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,IC,Unit Rate,4.21,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Unit Rate,-1.84,OPEX,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,ECO,Unit Rate,0.0,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.22,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.17,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.56,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.65,Wholesale Costs,Direct Debit,0.0,0.0,0.0%,0.0%
+Gas,CO,Standing Charge,107.66,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,DRC,Standing Charge,6.36,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Standing Charge,3.52,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,HAP,Standing Charge,1.86,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,IC,Standing Charge,11.27,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Standing Charge,-8.99,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,Gas Transmission,Unit Rate,13.45,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,Gas Distribution,Unit Rate,165.22,Network Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,CO,Unit Rate,28.68,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,DRC,Unit Rate,2.42,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Unit Rate,17.53,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,HAP,Unit Rate,6.66,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,IC,Unit Rate,4.21,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Unit Rate,0.0,OPEX,PPM,0.0,0.0,0.0%,0.0%
+Gas,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.22,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.17,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.56,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.65,Wholesale Costs,PPM,0.0,0.0,0.0%,0.0%
+Gas,CO,Standing Charge,95.7,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,DRC,Standing Charge,12.25,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Standing Charge,3.36,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,HAP,Standing Charge,1.84,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,IC,Standing Charge,11.27,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Standing Charge,-4.09,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Gas Transmission,Unit Rate,13.45,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Gas Distribution,Unit Rate,165.22,Network Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,CO,Unit Rate,28.91,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,DRC,Unit Rate,54.86,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,EBIT,Unit Rate,18.46,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,HAP,Unit Rate,7.42,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,IC,Unit Rate,4.21,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,SMNCC,Unit Rate,-1.84,OPEX,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,ECO,Unit Rate,0.0,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.22,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Direct Fuel,Unit Rate,39.17,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.56,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+Gas,Backwardation,Unit Rate,0.65,Wholesale Costs,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,Direct Debit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.43%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.35%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.46%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.21%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.43%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.35%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.46%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.21%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.43%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.35%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.46%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.21%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.48%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.4%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.52%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.24%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.96%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.8%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,1.04%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.48%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.62%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.52%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.68%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.31%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.05%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.04%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.06%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.03%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.14%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.12%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.15%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.07%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.52%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.43%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.56%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.26%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.96%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.8%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,1.04%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.48%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.62%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.52%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.68%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.31%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.05%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.04%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.06%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.03%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.14%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.12%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.15%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.07%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.52%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.43%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.56%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.26%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,PPM,0.0,801.6883199316958,0.0%,0.23%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,PPM,0.0,965.4044178155593,0.0%,0.19%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,PPM,0.0,740.9497361581259,0.0%,0.24%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,PPM,0.0,1619.7699588943133,0.0%,0.11%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD,Standing Charge,3.41,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,GGL,Standing Charge,3.82,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,nRAB,Unit Rate,4.16,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,FiT,Unit Rate,7.7,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,ECO,Unit Rate,0.0,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,5.01,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,AAHEDC,Unit Rate,0.43,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,NCC,Unit Rate,1.14,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,nRAB,Unit Rate,4.14,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
+nan,WHD (unit rate),Unit Rate,1.81,Policy Cost Allowances,Standard Credit,0.0,0.0,0.0%,0.0%
