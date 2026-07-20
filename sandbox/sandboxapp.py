@@ -1,303 +1,267 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import numpy as np
+import os
 
 # ==========================================
-# 1. PAGE CONFIGURATION
+# 1. PAGE CONFIGURATION & METADATA
 # ==========================================
-st.set_page_config(page_title="Price Cap Sandbox", layout="wide", page_icon="🎛️")
-st.title("🎛️ Energy Price Cap Simulator & Sandbox")
-st.markdown("Play with the July 2026 price cap allowances. Add, edit, or remove policies to simulate the exact impact on the final consumer bill.")
+st.set_page_config(page_title="Policy Sandbox", layout="wide", page_icon="🛠️")
+st.title("🛠️ Price Cap Policy Sandbox")
+st.markdown("Simulate how changes to individual allowances or brand-new policies impact the total annualised bill.")
 
-# ==========================================
-# 2. LOAD DATA & TDCV METADATA
-# ==========================================
-@st.cache_data
-def load_sandbox_data():
-    try:
-        df = pd.read_csv("sandbox/Sandbox_Master_Allowances_July2026 (2).csv")
-        return df
-    except FileNotFoundError:
-        st.error("Missing 'Sandbox_Master_Allowances_July2026.csv'. Please run the Colab extraction script first.")
-        return pd.DataFrame()
-
-df_master = load_sandbox_data()
-
-# Official Ofgem TDCV values (July 2026 onwards)
-TDCV_DEFAULTS = {
-    'Gas': 11500,
-    'Electricity Single-Rate': 2900,
-    'Electricity Multi-Register': 3900,
-    'Dual Fuel (implied)': 100 
+ALLOWANCE_DICT = {
+    'DF': 'Direct Fuel Cost', 'CM': 'Capacity Market', 'AA': 'Adjustment Allowance', 
+    'PC': 'Policy Costs', 'NC': 'Network Costs', 'OC': 'Operating Costs (Legacy)', 
+    'CO': 'Core Operating Costs', 'SMNCC': 'Smart Metering Net Cost Change', 
+    'IC': 'Industry Charges', 'PAAC': 'Payment Method Uplift (Fixed)', 
+    'PAP': 'Payment Method Uplift (Variable)', 'DRC': 'Debt-Related Costs', 
+    'EBIT': 'Earnings Before Interest and Tax', 'HAP': 'Headroom Allowance Percentage', 
+    'RO': 'Renewables Obligation (RO)', 'FiT': 'Feed-in Tariff (FiT)', 
+    'ECO': 'Energy Company Obligation (ECO)', 'WHD': 'Warm Home Discount (WHD)', 
+    'WHD (unit rate)': 'Warm Home Discount (Unit Rate)', 
+    'AAHEDC': 'Assistance for Areas with High Electricity Distribution Costs', 
+    'NCC': 'Network Charging Compensation', 'nRAB': 'Nuclear Regulated Asset Base', 
+    'CfD': 'Contracts for Difference (CfD)', 'Backwardation': 'Backwardation', 
+    'Gas Transmission': 'Gas Transmission', 'Gas Distribution': 'Gas Distribution', 
+    'TNUoS': 'Transmission Network Use of System (TNUoS)', 
+    'BSUoS': 'Balancing Services Use of System (BSUoS)', 
+    'DUoS': 'Distribution Use of System (DUoS)', 'Levelisation': 'Levelisation'
 }
 
-# ==========================================
-# 3. SIDEBAR ENGINE: ANCHORS & CONSUMPTION
-# ==========================================
-st.sidebar.header("1. Choose Baseline Profile")
+TAB_GROUPINGS = {
+    "Wholesale": ['Direct Fuel Cost', 'Backwardation', 'Capacity Market', 'Contracts for Difference (CfD)'],
+    "Policy": ['Renewables Obligation (RO)', 'Feed-in Tariff (FiT)', 'Energy Company Obligation (ECO)', 
+               'Warm Home Discount (WHD)', 'Warm Home Discount (Unit Rate)', 'Assistance for Areas with High Electricity Distribution Costs', 
+               'Network Charging Compensation', 'Nuclear Regulated Asset Base', 'Policy Costs'],
+    "Network": ['Transmission Network Use of System (TNUoS)', 'Distribution Use of System (DUoS)', 
+                'Balancing Services Use of System (BSUoS)', 'Gas Distribution', 'Gas Transmission', 'Network Costs'],
+    "OPEX": ['Operating Costs (Legacy)', 'Core Operating Costs', 'Debt-Related Costs', 'Industry Charges', 
+             'Earnings Before Interest and Tax', 'Smart Metering Net Cost Change', 'Headroom Allowance Percentage'],
+    "Other Costs": ['Adjustment Allowance', 'Payment Method Uplift (Fixed)', 'Payment Method Uplift (Variable)', 'Levelisation']
+}
 
-if not df_master.empty:
-    available_fuels = sorted([str(x) for x in df_master['Fuel Type'].dropna().unique()])
-    available_pms = sorted([str(x) for x in df_master['Payment Method'].dropna().unique()])
-else:
-    available_fuels, available_pms = [], []
-
-selected_fuel = st.sidebar.selectbox("Fuel Type", options=available_fuels)
-selected_pm = st.sidebar.selectbox("Payment Method", options=available_pms)
-
-st.sidebar.divider()
-st.sidebar.header("2. Set Consumer Usage")
-
-use_tdcv = st.sidebar.checkbox("Use Standard Ofgem TDCV", value=True)
-
-# Smart Logic for Dual Fuel vs Single Fuel
-if selected_fuel == 'Dual Fuel (implied)':
-    st.sidebar.markdown("*Dual Fuel scaling options:*")
-    scale_mode = st.sidebar.radio("Scaling Method", ["Percentage Increase", "Custom Gas & Elec kWh"])
-    
-    if scale_mode == "Percentage Increase":
-        custom_usage = st.sidebar.number_input(
-            "Usage Level (%)", 
-            min_value=10, max_value=300, value=100, step=10,
-            disabled=use_tdcv
-        )
-        usage_multiplier_gas = custom_usage / 100.0
-        usage_multiplier_elec = custom_usage / 100.0
-    else:
-        gas_usage = st.sidebar.number_input("Gas Consumption (kWh)", value=11500, step=100, disabled=use_tdcv)
-        elec_usage = st.sidebar.number_input("Elec Consumption (kWh)", value=2900, step=100, disabled=use_tdcv)
-        usage_multiplier_gas = gas_usage / 11500.0
-        usage_multiplier_elec = elec_usage / 2900.0
-else:
-    default_tdcv = TDCV_DEFAULTS.get(selected_fuel, 2900)
-    custom_usage = st.sidebar.number_input(
-        f"Annual Consumption (kWh)", 
-        min_value=0, value=default_tdcv, step=100,
-        disabled=use_tdcv
-    )
-    usage_multiplier_single = custom_usage / default_tdcv
-
-st.sidebar.divider()
-st.sidebar.info("💡 **How scaling works:** Standing Charge changes apply a flat £ impact. Unit Rate changes scale dynamically based on the consumption entered above.")
+DEFAULT_TDCV = {"Gas": 11500, "Electricity Single-Rate": 2900, "Electricity Multi-Register": 2900}
 
 # ==========================================
-# 4. INITIALIZE SESSION STATE FOR CUSTOM POLICIES
+# 2. DATA LOADING & FILTERING
 # ==========================================
-if 'custom_policies' not in st.session_state:
-    st.session_state.custom_policies = []
-
-# ==========================================
-# 5. MAIN SANDBOX LAYOUT
-# ==========================================
-if df_master.empty:
-    st.stop()
-
-# Secretly split Dual Fuel into its pure components to allow independent SC/UR math
-if selected_fuel == 'Dual Fuel (implied)':
-    df_filtered = df_master[(df_master['Fuel Type'].isin(['Gas', 'Electricity Single-Rate'])) & 
-                            (df_master['Payment Method'] == selected_pm)].copy()
-    # Add labels so the user knows which fuel they are tweaking
-    df_filtered['Allowance'] = df_filtered['Allowance'] + " (" + df_filtered['Fuel Type'].replace({'Electricity Single-Rate': 'Elec'}) + ")"
-else:
-    df_filtered = df_master[(df_master['Fuel Type'] == selected_fuel) & 
-                            (df_master['Payment Method'] == selected_pm)].copy()
-
-if df_filtered.empty:
-    st.warning("No baseline data available for this specific combination.")
-    st.stop()
-
-col_controls, col_visuals = st.columns([1.2, 2])
-
-simulated_values = {}
-
-with col_controls:
-    st.subheader("🛠️ Policy Control Panel")
-    st.markdown("*(Values shown are annualized £ at standard TDCV)*")
-    
-    categories = sorted(df_filtered['Tab Category'].unique())
-    
-    for category in categories:
-        with st.expander(f"📁 {category}", expanded=False):
-            cat_data = df_filtered[df_filtered['Tab Category'] == category]
+@st.cache_data
+def load_baseline_data():
+    files = [
+        'Cleaned_Price_Cap_Data.csv', 
+        'wholesale_allowances_cleaned.csv', 
+        'policy_costs_cleaned.csv', 
+        'network_costs_cleaned.csv'
+    ]
+    dfs = []
+    for f in files:
+        if os.path.exists(f):
+            df = pd.read_csv(f)
+            # Standardise column spacing
+            for col in ['Fuel Type', 'Charge Type', 'Payment Method', 'Allowance']:
+                if col in df.columns:
+                    df[col] = df[col].astype(str).str.strip()
             
-            # We now grab 'idx' (the unique row number) to ensure perfect key uniqueness
-            for idx, row in cat_data.iterrows():
-                allowance_name = row['Allowance']
+            # Map Allowance codes to readable names
+            if 'Allowance' in df.columns:
+                df['Allowance_Full'] = df['Allowance'].map(ALLOWANCE_DICT).fillna(df['Allowance'])
+            
+            # Fill missing Payment Methods
+            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all():
+                df['Payment Method'] = 'All' 
+                
+            dfs.append(df)
+            
+    if dfs:
+        combined = pd.concat(dfs, ignore_index=True)
+        # Lock the baseline strictly to the latest period
+        return combined[combined['Cap Period'].str.contains('Jul 2026|July 2026', case=False, na=False)]
+    return pd.DataFrame()
+
+df_baseline = load_baseline_data()
+
+# ==========================================
+# 3. SIDEBAR FILTERS
+# ==========================================
+st.sidebar.header("1. Global Settings")
+fuel_options = ["Electricity Single-Rate", "Electricity Multi-Register", "Gas"]
+selected_fuel = st.sidebar.selectbox("Fuel Type", options=fuel_options)
+
+payment_options = ["Direct Debit", "Standard Credit", "PPM"]
+selected_payment = st.sidebar.selectbox("Payment Method", options=payment_options)
+
+st.sidebar.divider()
+st.sidebar.header("2. TDCV Settings")
+st.sidebar.markdown("Adjust the Typical Domestic Consumption Value to see how scaling affects the annualised Unit Rate costs.")
+baseline_tdcv = DEFAULT_TDCV.get(selected_fuel, 2900)
+custom_tdcv = st.sidebar.number_input(f"New TDCV ({selected_fuel})", value=baseline_tdcv, step=100)
+
+# Filter data to selection
+df_filtered = df_baseline[
+    (df_baseline['Fuel Type'] == selected_fuel) & 
+    ((df_baseline['Payment Method'] == selected_payment) | (df_baseline['Payment Method'] == 'All'))
+].copy()
+
+def get_bucket(allowance_name):
+    for bucket, allowances in TAB_GROUPINGS.items():
+        if allowance_name in allowances:
+            return bucket
+    return "Other Costs"
+
+df_filtered['Bucket'] = df_filtered['Allowance_Full'].apply(get_bucket)
+df_filtered['Charge Type'] = df_filtered['Charge Type'].replace({'UR': 'Unit Rate', 'SC': 'Standing Charge'})
+
+# Group to handle duplicates if files overlap
+df_filtered = df_filtered.groupby(['Bucket', 'Allowance_Full', 'Charge Type'], as_index=False)['Cost Value'].sum()
+
+# ==========================================
+# 4. UI: ALLOWANCE ADJUSTMENTS
+# ==========================================
+st.markdown("### 🎛️ Modify Allowances")
+st.markdown("Edit existing baseline allowances or inject new policy costs below. Unit Rates (UR) will automatically scale with your chosen TDCV.")
+
+simulated_values = []
+buckets = ["Wholesale", "Policy", "Network", "OPEX", "Other Costs"]
+
+col1, col2 = st.columns(2)
+
+for i, bucket in enumerate(buckets):
+    bucket_data = df_filtered[df_filtered['Bucket'] == bucket]
+    target_col = col1 if i % 2 == 0 else col2
+    
+    with target_col.expander(f"{bucket} Allowances", expanded=(i==0)):
+        if not bucket_data.empty:
+            for _, row in bucket_data.iterrows():
+                allowance = row['Allowance_Full']
                 charge_type = row['Charge Type']
-                fuel_type_row = row['Fuel Type']
-                base_val = float(row['Allowance Value'])
+                base_val = float(row['Cost Value'])
                 
-                # Inject 'idx' into the key so it is 100% unique, even if names match
-                widget_key = f"{category}_{allowance_name}_{charge_type}_{idx}"
-                
-                sim_val = st.number_input(
-                    label=f"{allowance_name} ({'SC' if charge_type == 'Standing Charge' else 'UR'})",
-                    value=base_val,
-                    step=5.0,
-                    key=widget_key
+                # Pre-fill with the exact baseline cost
+                new_val = st.number_input(
+                    f"{allowance} ({charge_type})", 
+                    value=base_val, 
+                    step=1.0, 
+                    key=f"{allowance}_{charge_type}_{bucket}"
                 )
                 
-                simulated_values[widget_key] = {
-                    'name': allowance_name,
-                    'charge_type': charge_type,
-                    'fuel_type': fuel_type_row,
-                    'baseline': base_val,
-                    'simulated': sim_val
-                }
-
-    # --- CUSTOM POLICY ADDER ---
-    with st.expander("➕ Add Proposed Custom Policy", expanded=True):
-        st.markdown("Introduce a brand new allowance to the price cap.")
-        cp_name = st.text_input("Policy Name", placeholder="e.g., Green Grid Levy")
-        cp_type = st.selectbox("Charge Application", ["Standing Charge", "Unit Rate"])
-        cp_val = st.number_input("Annual Value at TDCV (£)", value=0.0, step=5.0)
-        
-        if st.button("Add Policy to Simulation"):
-            if cp_name:
-                st.session_state.custom_policies.append({
-                    'name': cp_name,
-                    'charge_type': cp_type,
-                    'baseline': 0.0,
-                    'simulated': cp_val
+                simulated_values.append({
+                    "Bucket": bucket,
+                    "Allowance": allowance,
+                    "Charge Type": charge_type,
+                    "Baseline Value": base_val,
+                    "Simulated Value": new_val
                 })
-                st.rerun()
+        else:
+            st.info(f"No {bucket} data available for this configuration.")
 
-    if st.session_state.custom_policies:
-        if st.button("🗑️ Clear Custom Policies"):
-            st.session_state.custom_policies = []
-            st.rerun()
+st.divider()
+
+# --- Custom Policy Injection ---
+st.markdown("### ➕ Add a New Policy Allowance")
+with st.expander("Inject New Regulatory Cost", expanded=True):
+    new_pol_col1, new_pol_col2, new_pol_col3, new_pol_col4 = st.columns(4)
+    new_pol_name = new_pol_col1.text_input("Policy Name", value="New Green Levy")
+    new_pol_bucket = new_pol_col2.selectbox("Categorise As:", options=buckets, index=1)
+    new_pol_charge = new_pol_col3.selectbox("Charge Type", options=["Standing Charge", "Unit Rate"])
+    new_pol_val = new_pol_col4.number_input("Annualised Cost Value (£)", value=0.0, step=1.0)
+    
+    if new_pol_val != 0.0:
+        simulated_values.append({
+            "Bucket": new_pol_bucket,
+            "Allowance": new_pol_name,
+            "Charge Type": new_pol_charge,
+            "Baseline Value": 0.0,
+            "Simulated Value": new_pol_val
+        })
+
 # ==========================================
-# 6. CALCULATE IMPACTS & RENDER VISUALS
+# 5. TDCV MATH & CALCULATIONS
 # ==========================================
-with col_visuals:
-    base_sc = 0.0; base_ur = 0.0
-    sim_sc = 0.0; sim_ur = 0.0
-    waterfall_steps = []
+df_sim = pd.DataFrame(simulated_values)
+
+if df_sim.empty:
+    st.warning("No data available to simulate.")
+    st.stop()
+
+def apply_tdcv_scaling(row, val_col):
+    """Scales Unit Rate based on the difference between standard and custom TDCV"""
+    if row['Charge Type'] == 'Unit Rate':
+        return row[val_col] * (custom_tdcv / baseline_tdcv)
+    return row[val_col]
+
+df_sim['Baseline Adjusted'] = df_sim.apply(lambda r: apply_tdcv_scaling(r, 'Baseline Value'), axis=1)
+df_sim['Simulated Adjusted'] = df_sim.apply(lambda r: apply_tdcv_scaling(r, 'Simulated Value'), axis=1)
+
+base_total = df_sim['Baseline Adjusted'].sum()
+sim_total = df_sim['Simulated Adjusted'].sum()
+diff = sim_total - base_total
+
+# ==========================================
+# 6. VISUALISATION
+# ==========================================
+st.markdown("### 📊 Bill Impact Analysis")
+
+met_col1, met_col2, met_col3 = st.columns(3)
+met_col1.metric("Baseline Annualised Bill (Jul 2026)", f"£{base_total:,.2f}")
+met_col2.metric("Simulated Annualised Bill", f"£{sim_total:,.2f}", delta=f"£{diff:,.2f}")
+met_col3.metric("TDCV Scaling Applied", f"{custom_tdcv} kWh")
+
+df_agg = df_sim.groupby('Bucket')[['Baseline Adjusted', 'Simulated Adjusted']].sum().reset_index()
+
+# Build Grouped Bar Chart
+fig_bar = go.Figure()
+
+fig_bar.add_trace(go.Bar(
+    x=df_agg['Bucket'], y=df_agg['Baseline Adjusted'],
+    name='Baseline (Jul 2026)', marker_color='#94a3b8',
+    hovertemplate="<b>%{x}</b><br>Baseline: £%{y:.2f}<extra></extra>"
+))
+
+fig_bar.add_trace(go.Bar(
+    x=df_agg['Bucket'], y=df_agg['Simulated Adjusted'],
+    name='Simulated', marker_color='#3b82f6',
+    hovertemplate="<b>%{x}</b><br>Simulated: £%{y:.2f}<extra></extra>"
+))
+
+fig_bar.update_layout(
+    title="Cost Breakdown by Bucket: Baseline vs Simulated",
+    barmode='group',
+    yaxis_title="Annualised Cost (£)",
+    hovermode="x unified",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+
+st.plotly_chart(fig_bar, use_container_width=True)
+
+# Build Waterfall Chart for precise variances
+st.markdown("### 💧 Detailed Variance (What Changed)")
+variance_df = df_sim[df_sim['Baseline Adjusted'] != df_sim['Simulated Adjusted']].copy()
+
+if not variance_df.empty:
+    variance_df['Variance'] = variance_df['Simulated Adjusted'] - variance_df['Baseline Adjusted']
     
-    # Process existing allowances
-    for key, data in simulated_values.items():
-        # 1. Baseline ALWAYS stays locked to Standard TDCV (Multiplier = 1.0)
-        base_mult = 1.0
-        
-        # 2. Simulated Bill scales with user inputs
-        if data['charge_type'] == 'Standing Charge':
-            sim_mult = 1.0
-        else:
-            if selected_fuel == 'Dual Fuel (implied)':
-                sim_mult = usage_multiplier_gas if data['fuel_type'] == 'Gas' else usage_multiplier_elec
-            else:
-                sim_mult = usage_multiplier_single
-                
-        adj_base = data['baseline'] * base_mult
-        adj_sim = data['simulated'] * sim_mult
-        delta = adj_sim - adj_base
-        
-        if data['charge_type'] == 'Standing Charge':
-            base_sc += adj_base; sim_sc += adj_sim
-        else:
-            base_ur += adj_base; sim_ur += adj_sim
-        
-        if round(delta, 2) != 0:
-            waterfall_steps.append({'name': data['name'], 'delta': delta})
-            
-    # Process custom policies
-    for cp in st.session_state.custom_policies:
-        if cp['charge_type'] == 'Standing Charge':
-            sim_mult = 1.0
-        else:
-            sim_mult = usage_multiplier_elec if selected_fuel == 'Dual Fuel (implied)' else usage_multiplier_single
-            
-        adj_sim = cp['simulated'] * sim_mult
-        
-        if cp['charge_type'] == 'Standing Charge':
-            sim_sc += adj_sim
-        else:
-            sim_ur += adj_sim
-            
-        if round(adj_sim, 2) != 0:
-            waterfall_steps.append({'name': f"⭐ {cp['name']}", 'delta': adj_sim})
-
-    total_baseline_bill = base_sc + base_ur
-    total_simulated_bill = sim_sc + sim_ur
-    net_impact = total_simulated_bill - total_baseline_bill
-
-    # --- RENDER KPIs ---
-    st.subheader("📊 Simulation Results")
-    kpi1, kpi2, kpi3 = st.columns(3)
-    kpi1.metric("Headline Cap (Standard TDCV)", f"£{total_baseline_bill:,.2f}")
-    kpi2.metric("Simulated Bill", f"£{total_simulated_bill:,.2f}", delta=f"£{net_impact:,.2f}", delta_color="inverse")
-    impact_pct = (net_impact / total_baseline_bill * 100) if total_baseline_bill > 0 else 0
-    kpi3.metric("Percentage Change", f"{impact_pct:,.2f}%", delta=f"{impact_pct:,.2f}%", delta_color="inverse")
-    st.divider()
-
-    # --- GRAPH 1: STACKED BAR CHART (UR/SC SEPARATED) ---
-    fig_bar = go.Figure(data=[
-        go.Bar(name='Standing Charge', x=['Baseline', 'Simulated'], y=[base_sc, sim_sc], marker_color=['#aec7e8', '#c5b0d5']),
-        go.Bar(name='Unit Rate', x=['Baseline', 'Simulated'], y=[base_ur, sim_ur], marker_color=['#1f77b4', '#9467bd'])
-    ])
-    fig_bar.update_layout(
-        barmode='stack',
-        title="Bill Breakdown: Standing Charge vs Unit Rate",
-        yaxis_title="Annual Bill (£)",
-        margin=dict(t=40, b=30),
-        height=350,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
-    st.plotly_chart(fig_bar, use_container_width=True)
-
-    # --- GRAPH 2: WATERFALL CHART (COLOR CODED) ---
-    x_labels = ["Baseline Bill"]
-    y_values = [total_baseline_bill]
-    measure = ["absolute"] # Starts the chart
+    # Format labels for clarity
+    labels = variance_df.apply(lambda r: f"{r['Allowance']} ({r['Charge Type']})", axis=1).tolist()
+    labels.append("Net Change")
     
-    # Add the deltas
-    for step in waterfall_steps:
-        x_labels.append(step['name'])
-        y_values.append(step['delta'])
-        measure.append("relative") 
-        
-    if not waterfall_steps:
-        x_labels.append("No Changes")
-        y_values.append(0)
-        measure.append("relative")
-        
-    x_labels.append("Simulated Bill")
-    y_values.append(total_simulated_bill)
-    measure.append("total") # Calculates the final Simulated bar
-
-    fig_wf = go.Figure()
-    
-    # Draw the main Waterfall
-    fig_wf.add_trace(go.Waterfall(
-        name="Impact", 
+    fig_waterfall = go.Figure(go.Waterfall(
+        name="Variance",
         orientation="v",
-        measure=measure,
-        x=x_labels,
+        measure=["relative"] * len(variance_df) + ["total"],
+        x=labels,
+        y=variance_df['Variance'].tolist() + [diff],
+        textfont={"family": "Arial", "size": 13},
         textposition="outside",
-        text=[f"{'+' if v > 0 and m == 'relative' else ''}£{v:,.0f}" for v, m in zip(y_values, measure)],
-        y=y_values,
-        connector={"line": {"color": "rgb(63, 63, 63)", "width": 2}},
-        decreasing={"marker": {"color": "#2ca02c"}}, # Green for savings
-        increasing={"marker": {"color": "#d62728"}}, # Red for price hikes
-        totals={"marker": {"color": "#9467bd"}}      # PURPLE for the Simulated Bill
+        connector={"line": {"color": "rgb(63, 63, 63)", "width": 2}}
     ))
-    
-    # PLOTLY WORKAROUND: Overlay a Blue bar strictly over the Baseline 
-    fig_wf.add_trace(go.Bar(
-        x=[x_labels[0]],
-        y=[y_values[0]],
-        marker_color="#1f77b4", # Blue
+
+    fig_waterfall.update_layout(
+        title="Impact of Adjustments on Total Bill",
         showlegend=False,
-        hoverinfo="skip"
-    ))
-    
-    fig_wf.update_layout(
-        barmode="overlay", # Required for the Blue bar overlay to work
-        title="Policy & Usage Impact Journey (Deltas)",
-        waterfallgap=0.3,
-        height=500,
-        margin=dict(t=40, b=100),
-        yaxis_title="Total Bill (£)"
+        yaxis_title="Change in Cost (£)",
+        xaxis_tickangle=-45
     )
-    st.plotly_chart(fig_wf, use_container_width=True)
+    st.plotly_chart(fig_waterfall, use_container_width=True)
+else:
+    st.info("No cost variances detected. Adjust the allowances or TDCV above to see the breakdown.")
