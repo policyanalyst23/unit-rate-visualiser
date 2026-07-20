@@ -72,7 +72,6 @@ def load_baseline_data():
         'network_costs_cleaned.csv'
     ]
     
-    # Let's check both the current folder and the 'mastertrackerapp' folder
     possible_folders = ['', 'mastertrackerapp/']
     
     dfs = []
@@ -107,20 +106,15 @@ def load_baseline_data():
                     
                 dfs.append(df)
                 file_loaded = True
-                break # Move to the next file if found
+                break
                 
         if not file_loaded:
             st.sidebar.warning(f"Warning: Could not find {f}")
             
     if dfs:
         combined = pd.concat(dfs, ignore_index=True)
-        
-        # --- DYNAMIC LATEST PERIOD LOCATOR ---
-        # Find the absolute maximum start date in the entire dataset
         max_date = combined['Parsed_Date'].max()
-        # Filter the dataset to ONLY include rows that match this max date (i.e. July 2026)
         latest_period_data = combined[combined['Parsed_Date'] == max_date].copy()
-        
         return latest_period_data
         
     return pd.DataFrame()
@@ -149,7 +143,7 @@ df_filtered = df_baseline[
     ((df_baseline['Payment Method'] == selected_payment) | (df_baseline['Payment Method'] == 'All'))
 ].copy()
 
-# Lock down valid granular allowances (removes aggregate 'PC' / 'NC' double counts)
+# Lock down valid granular allowances
 valid_allowances = [item for sublist in TAB_GROUPINGS.values() for item in sublist]
 df_filtered = df_filtered[df_filtered['Allowance_Full'].isin(valid_allowances)]
 
@@ -252,7 +246,6 @@ diff = sim_total - base_total
 # ==========================================
 st.markdown("### 📊 Bill Impact Analysis")
 
-# Dynamically display the Cap Period name so you know exactly which one it caught
 display_period = df_baseline['Cap Period'].iloc[0] if not df_baseline.empty else "Latest Period"
 
 met_col1, met_col2, met_col3 = st.columns(3)
@@ -260,34 +253,74 @@ met_col1.metric(f"Baseline Annualised Bill ({display_period})", f"£{base_total:
 met_col2.metric("Simulated Annualised Bill", f"£{sim_total:,.2f}", delta=f"£{diff:,.2f}")
 met_col3.metric("TDCV Scaling Applied", f"{custom_tdcv} kWh")
 
-df_agg = df_sim.groupby('Bucket')[['Baseline Adjusted', 'Simulated Adjusted']].sum().reset_index()
+# --- Layout for Charts ---
+chart_col1, chart_col2 = st.columns(2)
 
-# Build Grouped Bar Chart
-fig_bar = go.Figure()
+# Chart 1: Whole Bill Stacked Chart (Standing Charge vs Unit Rate)
+with chart_col1:
+    df_charge = df_sim.groupby('Charge Type')[['Baseline Adjusted', 'Simulated Adjusted']].sum().reset_index()
+    
+    sc_base = df_charge[df_charge['Charge Type'] == 'Standing Charge']['Baseline Adjusted'].sum() if 'Standing Charge' in df_charge['Charge Type'].values else 0
+    sc_sim = df_charge[df_charge['Charge Type'] == 'Standing Charge']['Simulated Adjusted'].sum() if 'Standing Charge' in df_charge['Charge Type'].values else 0
+    
+    ur_base = df_charge[df_charge['Charge Type'] == 'Unit Rate']['Baseline Adjusted'].sum() if 'Unit Rate' in df_charge['Charge Type'].values else 0
+    ur_sim = df_charge[df_charge['Charge Type'] == 'Unit Rate']['Simulated Adjusted'].sum() if 'Unit Rate' in df_charge['Charge Type'].values else 0
 
-fig_bar.add_trace(go.Bar(
-    x=df_agg['Bucket'], y=df_agg['Baseline Adjusted'],
-    name=f'Baseline ({display_period})', marker_color='#94a3b8',
-    hovertemplate="<b>%{x}</b><br>Baseline: £%{y:.2f}<extra></extra>"
-))
+    fig_stacked = go.Figure()
+    
+    fig_stacked.add_trace(go.Bar(
+        name='Standing Charge',
+        x=[f'Baseline', 'Simulated'],
+        y=[sc_base, sc_sim],
+        marker_color='#a855f7', # Vibrant Purple
+        hovertemplate="<b>%{x}</b><br>Standing Charge: £%{y:.2f}<extra></extra>"
+    ))
+    
+    fig_stacked.add_trace(go.Bar(
+        name='Unit Rate',
+        x=[f'Baseline', 'Simulated'],
+        y=[ur_base, ur_sim],
+        marker_color='#14b8a6', # Vibrant Teal
+        hovertemplate="<b>%{x}</b><br>Unit Rate: £%{y:.2f}<extra></extra>"
+    ))
 
-fig_bar.add_trace(go.Bar(
-    x=df_agg['Bucket'], y=df_agg['Simulated Adjusted'],
-    name='Simulated', marker_color='#3b82f6',
-    hovertemplate="<b>%{x}</b><br>Simulated: £%{y:.2f}<extra></extra>"
-))
+    fig_stacked.update_layout(
+        title="Total Bill: Standing Charge vs Unit Rate",
+        barmode='stack',
+        yaxis_title="Annualised Cost (£)",
+        hovermode="x unified",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    st.plotly_chart(fig_stacked, use_container_width=True)
 
-fig_bar.update_layout(
-    title="Cost Breakdown by Bucket: Baseline vs Simulated",
-    barmode='group',
-    yaxis_title="Annualised Cost (£)",
-    hovermode="x unified",
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-)
+# Chart 2: Grouped Bar Chart (Buckets)
+with chart_col2:
+    df_agg = df_sim.groupby('Bucket')[['Baseline Adjusted', 'Simulated Adjusted']].sum().reset_index()
 
-st.plotly_chart(fig_bar, use_container_width=True)
+    fig_bar = go.Figure()
 
-# Build Waterfall Chart for precise variances
+    fig_bar.add_trace(go.Bar(
+        x=df_agg['Bucket'], y=df_agg['Baseline Adjusted'],
+        name=f'Baseline', marker_color='#f43f5e', # Bright Rose
+        hovertemplate="<b>%{x}</b><br>Baseline: £%{y:.2f}<extra></extra>"
+    ))
+
+    fig_bar.add_trace(go.Bar(
+        x=df_agg['Bucket'], y=df_agg['Simulated Adjusted'],
+        name='Simulated', marker_color='#facc15', # Bright Sun Yellow
+        hovertemplate="<b>%{x}</b><br>Simulated: £%{y:.2f}<extra></extra>"
+    ))
+
+    fig_bar.update_layout(
+        title="Cost Breakdown by Allowance Bucket",
+        barmode='group',
+        yaxis_title="Annualised Cost (£)",
+        hovermode="x unified",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+# Chart 3: Waterfall Chart for precise variances
 st.markdown("### 💧 Detailed Variance (What Changed)")
 variance_df = df_sim[df_sim['Baseline Adjusted'] != df_sim['Simulated Adjusted']].copy()
 
@@ -306,7 +339,10 @@ if not variance_df.empty:
         y=variance_df['Variance'].tolist() + [diff],
         textfont={"family": "Arial", "size": 13},
         textposition="outside",
-        connector={"line": {"color": "rgb(63, 63, 63)", "width": 2}}
+        connector={"line": {"color": "rgb(63, 63, 63)", "width": 2}},
+        decreasing={"marker": {"color": "#10b981"}}, # Mint Green for cost drops
+        increasing={"marker": {"color": "#ef4444"}}, # Coral Red for cost bumps
+        totals={"marker": {"color": "#6366f1"}}      # Indigo for final net change
     ))
 
     fig_waterfall.update_layout(
