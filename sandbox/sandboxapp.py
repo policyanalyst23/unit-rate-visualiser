@@ -29,16 +29,30 @@ ALLOWANCE_DICT = {
     'DUoS': 'Distribution Use of System (DUoS)', 'Levelisation': 'Levelisation'
 }
 
+# The strict list of granular allowances (no aggregate 'PC' or 'NC' buckets)
 TAB_GROUPINGS = {
     "Wholesale": ['Direct Fuel Cost', 'Backwardation', 'Capacity Market', 'Contracts for Difference (CfD)'],
     "Policy": ['Renewables Obligation (RO)', 'Feed-in Tariff (FiT)', 'Energy Company Obligation (ECO)', 
                'Warm Home Discount (WHD)', 'Warm Home Discount (Unit Rate)', 'Assistance for Areas with High Electricity Distribution Costs', 
-               'Network Charging Compensation', 'Nuclear Regulated Asset Base', 'Policy Costs'],
+               'Network Charging Compensation', 'Nuclear Regulated Asset Base'],
     "Network": ['Transmission Network Use of System (TNUoS)', 'Distribution Use of System (DUoS)', 
-                'Balancing Services Use of System (BSUoS)', 'Gas Distribution', 'Gas Transmission', 'Network Costs'],
+                'Balancing Services Use of System (BSUoS)', 'Gas Distribution', 'Gas Transmission'],
     "OPEX": ['Operating Costs (Legacy)', 'Core Operating Costs', 'Debt-Related Costs', 'Industry Charges', 
              'Earnings Before Interest and Tax', 'Smart Metering Net Cost Change', 'Headroom Allowance Percentage'],
     "Other Costs": ['Adjustment Allowance', 'Payment Method Uplift (Fixed)', 'Payment Method Uplift (Variable)', 'Levelisation']
+}
+
+# Standardize messy fuel names
+FUEL_MAPPING = {
+    'Electricity Single Rate': 'Electricity Single-Rate',
+    'Electricity- Single-Rate': 'Electricity Single-Rate',
+    'Electricity - Single-Rate': 'Electricity Single-Rate',
+    'Electricity - Multi-Register': 'Electricity Multi-Register',
+    'Electricity Multi Register': 'Electricity Multi-Register',
+    'Non-PPM gas': 'Gas',
+    'Gas': 'Gas',
+    'Dual Fuel': 'Dual Fuel (implied)',
+    'Dual Fuel (implied)': 'Dual Fuel (implied)'
 }
 
 DEFAULT_TDCV = {"Gas": 11500, "Electricity Single-Rate": 2900, "Electricity Multi-Register": 2900}
@@ -58,17 +72,22 @@ def load_baseline_data():
     for f in files:
         if os.path.exists(f):
             df = pd.read_csv(f)
-            # Standardise column spacing
+            
+            # Scrub Whitespaces
             for col in ['Fuel Type', 'Charge Type', 'Payment Method', 'Allowance']:
                 if col in df.columns:
                     df[col] = df[col].astype(str).str.strip()
             
+            # Standardize Fuel Types so filtering works across all sheets
+            if 'Fuel Type' in df.columns:
+                df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
+                
             # Map Allowance codes to readable names
             if 'Allowance' in df.columns:
                 df['Allowance_Full'] = df['Allowance'].map(ALLOWANCE_DICT).fillna(df['Allowance'])
             
             # Fill missing Payment Methods
-            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all():
+            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all() or (df['Payment Method'] == 'nan').all():
                 df['Payment Method'] = 'All' 
                 
             dfs.append(df)
@@ -103,6 +122,10 @@ df_filtered = df_baseline[
     ((df_baseline['Payment Method'] == selected_payment) | (df_baseline['Payment Method'] == 'All'))
 ].copy()
 
+# Lock down valid granular allowances (removes aggregate 'PC' / 'NC' double counts)
+valid_allowances = [item for sublist in TAB_GROUPINGS.values() for item in sublist]
+df_filtered = df_filtered[df_filtered['Allowance_Full'].isin(valid_allowances)]
+
 def get_bucket(allowance_name):
     for bucket, allowances in TAB_GROUPINGS.items():
         if allowance_name in allowances:
@@ -127,7 +150,7 @@ buckets = ["Wholesale", "Policy", "Network", "OPEX", "Other Costs"]
 col1, col2 = st.columns(2)
 
 for i, bucket in enumerate(buckets):
-    bucket_data = df_filtered[df_filtered['Bucket'] == bucket]
+    bucket_data = df_filtered[df_filtered['Bucket'] == bucket].sort_values('Allowance_Full')
     target_col = col1 if i % 2 == 0 else col2
     
     with target_col.expander(f"{bucket} Allowances", expanded=(i==0)):
