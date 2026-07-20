@@ -11,7 +11,7 @@ st.title("🛠️ Price Cap Policy Sandbox")
 st.markdown("Simulate how changes to individual allowances or brand-new policies impact the total annualised bill.")
 
 ALLOWANCE_DICT = {
-    'DF': 'Direct Fuel Cost', 'Direct Fuel': 'Direct Fuel Cost', # Added direct fuel catch
+    'DF': 'Direct Fuel Cost', 'Direct Fuel': 'Direct Fuel Cost', 
     'CM': 'Capacity Market', 'AA': 'Adjustment Allowance', 
     'PC': 'Policy Costs', 'NC': 'Network Costs', 'OC': 'Operating Costs (Legacy)', 
     'CO': 'Core Operating Costs', 'SMNCC': 'Smart Metering Net Cost Change', 
@@ -31,6 +31,7 @@ ALLOWANCE_DICT = {
     'DUoS': 'Distribution Use of System (DUoS)', 'Levelisation': 'Levelisation'
 }
 
+# The strict list of granular allowances (no aggregate 'PC' or 'NC' buckets)
 TAB_GROUPINGS = {
     "Wholesale": ['Direct Fuel Cost', 'Backwardation', 'Capacity Market', 'Contracts for Difference (CfD)'],
     "Policy": ['Renewables Obligation (RO)', 'Feed-in Tariff (FiT)', 'Energy Company Obligation (ECO)', 
@@ -60,8 +61,9 @@ FUEL_MAPPING = {
 DEFAULT_TDCV = {"Gas": 11500, "Electricity Single-Rate": 2900, "Electricity Multi-Register": 2900}
 
 # ==========================================
-# 2. DATA LOADING & FILTERING (Cache Removed for Debugging)
+# 2. DATA LOADING & FILTERING
 # ==========================================
+@st.cache_data
 def load_baseline_data():
     files = [
         'Cleaned_Price_Cap_Data.csv', 
@@ -69,34 +71,58 @@ def load_baseline_data():
         'policy_costs_cleaned.csv', 
         'network_costs_cleaned.csv'
     ]
+    
+    # Let's check both the current folder and the 'mastertrackerapp' folder
+    possible_folders = ['', 'mastertrackerapp/']
+    
     dfs = []
     for f in files:
-        if os.path.exists(f):
-            df = pd.read_csv(f)
-            
-            # Scrub Whitespaces first to prevent mapping errors
-            for col in ['Fuel Type', 'Charge Type', 'Payment Method', 'Allowance', 'Cap Period']:
-                if col in df.columns:
-                    df[col] = df[col].astype(str).str.strip()
-            
-            # Standardize Fuel Types so filtering works across all sheets
-            if 'Fuel Type' in df.columns:
-                df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
+        file_loaded = False
+        for folder in possible_folders:
+            filepath = os.path.join(folder, f)
+            if os.path.exists(filepath):
+                df = pd.read_csv(filepath)
                 
-            # Map Allowance codes to readable names
-            if 'Allowance' in df.columns:
-                df['Allowance_Full'] = df['Allowance'].map(ALLOWANCE_DICT).fillna(df['Allowance'])
-            
-            # Fill missing Payment Methods for universal items (like Policy Costs)
-            if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all() or (df['Payment Method'] == 'nan').all():
-                df['Payment Method'] = 'All' 
+                # Scrub Whitespaces first to prevent mapping errors
+                for col in ['Fuel Type', 'Charge Type', 'Payment Method', 'Allowance', 'Cap Period']:
+                    if col in df.columns:
+                        df[col] = df[col].astype(str).str.strip()
                 
-            dfs.append(df)
+                # Standardize Fuel Types so filtering works across all sheets
+                if 'Fuel Type' in df.columns:
+                    df['Fuel Type'] = df['Fuel Type'].replace(FUEL_MAPPING)
+                    
+                # Map Allowance codes to readable names
+                if 'Allowance' in df.columns:
+                    df['Allowance_Full'] = df['Allowance'].map(ALLOWANCE_DICT).fillna(df['Allowance'])
+                
+                # Fill missing Payment Methods for universal items (like Policy Costs)
+                if 'Payment Method' not in df.columns or df['Payment Method'].isnull().all() or (df['Payment Method'] == 'nan').all():
+                    df['Payment Method'] = 'All' 
+                    
+                # Parse Start Date to find the absolute latest period chronologically
+                if 'Cap Period' in df.columns:
+                    df['Temp_Start'] = df['Cap Period'].astype(str).str.split('-').str[0].str.strip()
+                    df['Parsed_Date'] = pd.to_datetime(df['Temp_Start'], errors='coerce')
+                    
+                dfs.append(df)
+                file_loaded = True
+                break # Move to the next file if found
+                
+        if not file_loaded:
+            st.sidebar.warning(f"Warning: Could not find {f}")
             
     if dfs:
         combined = pd.concat(dfs, ignore_index=True)
-        # Lock the baseline strictly to the latest period
-        return combined[combined['Cap Period'].str.contains('Jul 2026|July 2026', case=False, na=False)]
+        
+        # --- DYNAMIC LATEST PERIOD LOCATOR ---
+        # Find the absolute maximum start date in the entire dataset
+        max_date = combined['Parsed_Date'].max()
+        # Filter the dataset to ONLY include rows that match this max date (i.e. July 2026)
+        latest_period_data = combined[combined['Parsed_Date'] == max_date].copy()
+        
+        return latest_period_data
+        
     return pd.DataFrame()
 
 df_baseline = load_baseline_data()
@@ -205,7 +231,7 @@ with st.expander("Inject New Regulatory Cost", expanded=True):
 df_sim = pd.DataFrame(simulated_values)
 
 if df_sim.empty:
-    st.warning("No data available to simulate. Please ensure your files contain the correct July 2026 data.")
+    st.warning("No data available to simulate. Check the sidebar warnings for missing files.")
     st.stop()
 
 def apply_tdcv_scaling(row, val_col):
@@ -226,8 +252,11 @@ diff = sim_total - base_total
 # ==========================================
 st.markdown("### 📊 Bill Impact Analysis")
 
+# Dynamically display the Cap Period name so you know exactly which one it caught
+display_period = df_baseline['Cap Period'].iloc[0] if not df_baseline.empty else "Latest Period"
+
 met_col1, met_col2, met_col3 = st.columns(3)
-met_col1.metric("Baseline Annualised Bill (Jul 2026)", f"£{base_total:,.2f}")
+met_col1.metric(f"Baseline Annualised Bill ({display_period})", f"£{base_total:,.2f}")
 met_col2.metric("Simulated Annualised Bill", f"£{sim_total:,.2f}", delta=f"£{diff:,.2f}")
 met_col3.metric("TDCV Scaling Applied", f"{custom_tdcv} kWh")
 
@@ -238,7 +267,7 @@ fig_bar = go.Figure()
 
 fig_bar.add_trace(go.Bar(
     x=df_agg['Bucket'], y=df_agg['Baseline Adjusted'],
-    name='Baseline (Jul 2026)', marker_color='#94a3b8',
+    name=f'Baseline ({display_period})', marker_color='#94a3b8',
     hovertemplate="<b>%{x}</b><br>Baseline: £%{y:.2f}<extra></extra>"
 ))
 
