@@ -11,7 +11,8 @@ st.title("🛠️ Price Cap Policy Sandbox")
 st.markdown("Simulate how changes to individual allowances or brand-new policies impact the total annualised bill.")
 
 ALLOWANCE_DICT = {
-    'DF': 'Direct Fuel Cost', 'CM': 'Capacity Market', 'AA': 'Adjustment Allowance', 
+    'DF': 'Direct Fuel Cost', 'Direct Fuel': 'Direct Fuel Cost', # Added direct fuel catch
+    'CM': 'Capacity Market', 'AA': 'Adjustment Allowance', 
     'PC': 'Policy Costs', 'NC': 'Network Costs', 'OC': 'Operating Costs (Legacy)', 
     'CO': 'Core Operating Costs', 'SMNCC': 'Smart Metering Net Cost Change', 
     'IC': 'Industry Charges', 'PAAC': 'Payment Method Uplift (Fixed)', 
@@ -22,7 +23,7 @@ ALLOWANCE_DICT = {
     'WHD (unit rate)': 'Warm Home Discount (Unit Rate)', 
     'AAHEDC': 'Assistance for Areas with High Electricity Distribution Costs', 
     'NCC': 'Network Charging Compensation', 'nRAB': 'Nuclear Regulated Asset Base', 
-    'GGL': 'Green Gas Levy (GGL)', # Added missing GGL mapping
+    'GGL': 'Green Gas Levy (GGL)',
     'CfD': 'Contracts for Difference (CfD)', 'Backwardation': 'Backwardation', 
     'Gas Transmission': 'Gas Transmission', 'Gas Distribution': 'Gas Distribution', 
     'TNUoS': 'Transmission Network Use of System (TNUoS)', 
@@ -30,7 +31,6 @@ ALLOWANCE_DICT = {
     'DUoS': 'Distribution Use of System (DUoS)', 'Levelisation': 'Levelisation'
 }
 
-# The strict list of granular allowances (no aggregate 'PC' or 'NC' buckets)
 TAB_GROUPINGS = {
     "Wholesale": ['Direct Fuel Cost', 'Backwardation', 'Capacity Market', 'Contracts for Difference (CfD)'],
     "Policy": ['Renewables Obligation (RO)', 'Feed-in Tariff (FiT)', 'Energy Company Obligation (ECO)', 
@@ -48,7 +48,7 @@ FUEL_MAPPING = {
     'Electricity Single Rate': 'Electricity Single-Rate',
     'Electricity- Single-Rate': 'Electricity Single-Rate',
     'Electricity - Single-Rate': 'Electricity Single-Rate',
-    'Electricity - Single Rate': 'Electricity Single-Rate', # Catches DUoS & BSUoS
+    'Electricity - Single Rate': 'Electricity Single-Rate',
     'Electricity - Multi-Register': 'Electricity Multi-Register',
     'Electricity Multi Register': 'Electricity Multi-Register',
     'Non-PPM gas': 'Gas',
@@ -60,9 +60,8 @@ FUEL_MAPPING = {
 DEFAULT_TDCV = {"Gas": 11500, "Electricity Single-Rate": 2900, "Electricity Multi-Register": 2900}
 
 # ==========================================
-# 2. DATA LOADING & FILTERING
+# 2. DATA LOADING & FILTERING (Cache Removed for Debugging)
 # ==========================================
-@st.cache_data
 def load_baseline_data():
     files = [
         'Cleaned_Price_Cap_Data.csv', 
@@ -206,7 +205,7 @@ with st.expander("Inject New Regulatory Cost", expanded=True):
 df_sim = pd.DataFrame(simulated_values)
 
 if df_sim.empty:
-    st.warning("No data available to simulate.")
+    st.warning("No data available to simulate. Please ensure your files contain the correct July 2026 data.")
     st.stop()
 
 def apply_tdcv_scaling(row, val_col):
