@@ -245,16 +245,13 @@ st.plotly_chart(fig_bar, use_container_width=True)
 st.markdown("### 📑 Portfolio Economics Ledger")
 st.markdown("Breaks down the absolute financial exposure based on your specific customer distribution.")
 
-st.dataframe(
-    df_results,
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        "Decile": st.column_config.TextColumn("Decile"),
-        "Profile": st.column_config.TextColumn("Profile"),
-        "Baseline Bill": st.column_config.NumberColumn("Baseline Bill", format="£%.2f"),
-        "Simulated Bill": st.column_config.NumberColumn("Simulated Bill", format="£%.2f"),
-        "Net Margin Impact (£/cust)": st.column_config.NumberColumn("Net Margin Impact (£/cust)", format="£%.2f"),
-        "Portfolio Impact (£)": st.column_config.NumberColumn("Portfolio Impact (£)", format="£%d")
-    }
-)
+format_dict = {
+    'Baseline Bill': '£{:.2f}',
+    'Simulated Bill': '£{:.2f}',
+    'Net Margin Impact (£/cust)': '£{:.2f}',
+    'Portfolio Impact (£)': '£{:,.0f}'
+}
+st.dataframe(df_results.style.format(format_dict).background_gradient(
+    subset=['Net Margin Impact (£/cust)', 'Portfolio Impact (£)'], 
+    cmap='RdYlGn'
+), use_container_width=True)
